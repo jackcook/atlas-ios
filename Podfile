@@ -1,6 +1,6 @@
-platform :ios, '9.0'
+platform :ios, '8.0'
 
 inhibit_all_warnings!
 use_frameworks!
 
-pod 'SVProgressHUD', '~> 1.1'
+pod 'MapboxGL', '~> 0.5'

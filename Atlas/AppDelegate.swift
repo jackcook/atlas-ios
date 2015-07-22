@@ -3,7 +3,7 @@
 //  Atlas
 //
 //  Created by Jack Cook on 7/22/15.
-//  Copyright © 2015 Jack Cook. All rights reserved.
+//  Copyright (c) 2015 Jack Cook. All rights reserved.
 //
 
 import UIKit
