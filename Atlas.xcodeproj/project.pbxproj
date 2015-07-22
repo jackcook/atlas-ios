@@ -198,6 +198,11 @@
 					EB4706581B60301600CD1611 = {
 						CreatedOnToolsVersion = 6.4;
 						DevelopmentTeam = JDJKS788L2;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					EB47066D1B60301600CD1611 = {
 						CreatedOnToolsVersion = 6.4;
