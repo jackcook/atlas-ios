@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00149D9E1C456D6785127622 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DBB003919F573B08AA6168AF /* libPods.a */; };
+		E5323C399A4B6575FC3C6E74 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB0D18F75B7497443EAB5D5E /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		EB1520151B6030960081376C /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1520141B6030960081376C /* MapViewController.swift */; };
 		EB47065F1B60301600CD1611 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB47065E1B60301600CD1611 /* AppDelegate.swift */; };
 		EB4706641B60301600CD1611 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB4706621B60301600CD1611 /* Main.storyboard */; };
@@ -29,7 +29,7 @@
 /* Begin PBXFileReference section */
 		2AB93A3E031D2BED2A17EBB0 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		53ABC2457894E5C5759FF591 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
-		DBB003919F573B08AA6168AF /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB0D18F75B7497443EAB5D5E /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB1520141B6030960081376C /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		EB4706591B60301600CD1611 /* Atlas.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Atlas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB47065D1B60301600CD1611 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -47,7 +47,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00149D9E1C456D6785127622 /* libPods.a in Frameworks */,
+				E5323C399A4B6575FC3C6E74 /* Pods.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,7 +73,7 @@
 		7ACE909882A656A496CAB131 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				DBB003919F573B08AA6168AF /* libPods.a */,
+				BB0D18F75B7497443EAB5D5E /* Pods.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -156,6 +156,7 @@
 				EB4706561B60301600CD1611 /* Frameworks */,
 				EB4706571B60301600CD1611 /* Resources */,
 				3CAE1736AFA0B4B9E8A91760 /* Copy Pods Resources */,
+				89736ADB0A20A96F10CE567C /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -271,6 +272,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		89736ADB0A20A96F10CE567C /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

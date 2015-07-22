@@ -17,7 +17,7 @@ class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let styleURL = NSURL(string: "asset://styles/light-v7.json")!
+        let styleURL = NSURL(string: "asset://styles/emerald-v7.json")!
         
         let mapView = MGLMapView(frame: mapViewContainer.bounds, styleURL: styleURL)
         mapView.autoresizingMask = .FlexibleWidth | .FlexibleHeight
