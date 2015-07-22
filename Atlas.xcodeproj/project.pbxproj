@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		2A7F0F97E2F3A6117A9900F7 /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33DB6121F9226D5315FB6B17 /* Pods.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		EB1520151B6030960081376C /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1520141B6030960081376C /* MapViewController.swift */; };
 		EB47065F1B60301600CD1611 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB47065E1B60301600CD1611 /* AppDelegate.swift */; };
-		EB4706611B60301600CD1611 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4706601B60301600CD1611 /* ViewController.swift */; };
 		EB4706641B60301600CD1611 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB4706621B60301600CD1611 /* Main.storyboard */; };
 		EB4706661B60301600CD1611 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB4706651B60301600CD1611 /* Images.xcassets */; };
 		EB4706691B60301600CD1611 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB4706671B60301600CD1611 /* LaunchScreen.xib */; };
@@ -30,10 +30,10 @@
 		2AB93A3E031D2BED2A17EBB0 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		33DB6121F9226D5315FB6B17 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		53ABC2457894E5C5759FF591 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		EB1520141B6030960081376C /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		EB4706591B60301600CD1611 /* Atlas.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Atlas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB47065D1B60301600CD1611 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EB47065E1B60301600CD1611 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		EB4706601B60301600CD1611 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		EB4706631B60301600CD1611 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		EB4706651B60301600CD1611 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		EB4706681B60301600CD1611 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -78,6 +78,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		EB1520131B60308A0081376C /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				EB1520141B6030960081376C /* MapViewController.swift */,
+			);
+			name = "View Controllers";
+			sourceTree = "<group>";
+		};
 		EB4706501B60301600CD1611 = {
 			isa = PBXGroup;
 			children = (
@@ -101,8 +109,8 @@
 		EB47065B1B60301600CD1611 /* Atlas */ = {
 			isa = PBXGroup;
 			children = (
+				EB1520131B60308A0081376C /* View Controllers */,
 				EB47065E1B60301600CD1611 /* AppDelegate.swift */,
-				EB4706601B60301600CD1611 /* ViewController.swift */,
 				EB4706621B60301600CD1611 /* Main.storyboard */,
 				EB4706651B60301600CD1611 /* Images.xcassets */,
 				EB4706671B60301600CD1611 /* LaunchScreen.xib */,
@@ -183,6 +191,7 @@
 		EB4706511B60301600CD1611 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0640;
 				ORGANIZATIONNAME = "Jack Cook";
 				TargetAttributes = {
@@ -287,8 +296,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EB4706611B60301600CD1611 /* ViewController.swift in Sources */,
 				EB47065F1B60301600CD1611 /* AppDelegate.swift in Sources */,
+				EB1520151B6030960081376C /* MapViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
