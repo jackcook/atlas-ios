@@ -9,12 +9,16 @@
 import MapboxGL
 import UIKit
 
-class MapViewController: UIViewController, MGLMapViewDelegate {
+class MapViewController: UIViewController, CLLocationManagerDelegate, MGLMapViewDelegate {
     
     @IBOutlet var statusBarContainer: UIView!
     @IBOutlet var mapViewContainer: UIView!
     
     var mapView: MGLMapView!
+    
+    var locationManager: CLLocationManager!
+    var locationAnnotation: MGLPointAnnotation?
+    var canDrawLocation = false
     
     let north = 40.915568
     let east = -73.699215
@@ -29,6 +33,7 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
         let styleURL = NSURL(string: "asset://styles/emerald-v7.json")!
         
         self.mapView = MGLMapView(frame: mapViewContainer.bounds, styleURL: styleURL)
+        self.mapView.delegate = self
         
         self.mapView.autoresizingMask = .FlexibleWidth | .FlexibleHeight
         self.mapView.attributionButton.alpha = 0
@@ -40,7 +45,16 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
         var dispatchTime: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, Int64(0.1 * Double(NSEC_PER_SEC)))
         dispatch_after(dispatchTime, dispatch_get_main_queue(), {
             self.drawPolyline()
+            self.canDrawLocation = true
         })
+        
+        
+        locationManager = CLLocationManager()
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.delegate = self
+        
+        locationManager.startUpdatingLocation()
+        
         
         let timer = NSTimer.scheduledTimerWithTimeInterval(0.5, target: self, selector: "checkCoordinate", userInfo: nil, repeats: true)
         NSRunLoop.mainRunLoop().addTimer(timer, forMode: NSRunLoopCommonModes)
@@ -89,5 +103,30 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
             
             self.mapView.setCenterCoordinate(newCoordinate, zoomLevel: newZoom, animated: true)
         }
+    }
+    
+    func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
+        if !canDrawLocation {
+            return
+        }
+        
+        let location = locations.last! as! CLLocation
+        println("user location is \(location.coordinate.latitude), \(location.coordinate.longitude)")
+        
+        if let annotation = locationAnnotation {
+            self.mapView.removeAnnotation(locationAnnotation!)
+        }
+        
+        locationAnnotation = MGLPointAnnotation()
+        locationAnnotation!.coordinate = location.coordinate
+        locationAnnotation!.title = "Current Location"
+        
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            self.mapView.addAnnotation(self.locationAnnotation!)
+        })
+    }
+    
+    func mapView(mapView: MGLMapView, annotationCanShowCallout annotation: MGLAnnotation) -> Bool {
+        return true
     }
 }
