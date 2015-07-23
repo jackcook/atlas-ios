@@ -70,7 +70,7 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
         let outside = outsideNorth || outsideEast || outsideWest || outsideSouth || outsideZoom
         
         var newCoordinate = self.mapView.centerCoordinate
-        var newZoom = maxZoom
+        var newZoom = outsideZoom ? maxZoom : self.mapView.zoomLevel
         
         if outside {
             if outsideNorth {
