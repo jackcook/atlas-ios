@@ -1,10 +1,10 @@
 PODS:
-  - MapboxGL (0.5.1)
+  - GoogleMaps (1.10.1)
 
 DEPENDENCIES:
-  - MapboxGL (~> 0.5)
+  - GoogleMaps (~> 1.10)
 
 SPEC CHECKSUMS:
-  MapboxGL: 4198dd3100fa012d3df5fc26ad13b69f6834473c
+  GoogleMaps: ebf08677f181d9c2dcdbd1721d206f02beccc9b1
 
 COCOAPODS: 0.38.0
