@@ -42,10 +42,11 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MGLMapView
         self.mapView.setCenterCoordinate(CLLocationCoordinate2D(latitude: 40.7127, longitude: -74.0059), zoomLevel: 12, animated: false)
         mapViewContainer.addSubview(self.mapView)
         
-        var dispatchTime: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, Int64(0.1 * Double(NSEC_PER_SEC)))
+        var dispatchTime: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, Int64(1 * Double(NSEC_PER_SEC)))
         dispatch_after(dispatchTime, dispatch_get_main_queue(), {
             self.drawPolyline()
             self.canDrawLocation = true
+            self.drawThing()
         })
         
         
@@ -66,6 +67,17 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MGLMapView
         
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
             self.mapView.addAnnotation(polyline)
+        })
+    }
+    
+    func drawThing() {
+        var point = MGLPointAnnotation()
+        point.coordinate = CLLocationCoordinate2D(latitude: 40.7789, longitude: -73.9637)
+        point.title = "Test"
+        point.subtitle = "Subtest"
+        
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            self.mapView.addAnnotation(point)
         })
     }
     
@@ -126,7 +138,24 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MGLMapView
         })
     }
     
+    func mapView(mapView: MGLMapView, annotation: MGLAnnotation, calloutAccessoryControlTapped control: UIControl) {
+        println("tapped")
+    }
+    
     func mapView(mapView: MGLMapView, annotationCanShowCallout annotation: MGLAnnotation) -> Bool {
         return true
+    }
+    
+    func mapView(mapView: MGLMapView, didSelectAnnotation annotation: MGLAnnotation) {
+        println("selected")
+    }
+    
+    func mapView(mapView: MGLMapView, imageForAnnotation annotation: MGLAnnotation) -> MGLAnnotationImage? {
+        var annotationImage = mapView.dequeueReusableAnnotationImageWithIdentifier("Transparent")
+        
+        let image = UIImage(named: "Transparent")!
+        annotationImage = MGLAnnotationImage(image: image, reuseIdentifier: "Transparent")
+        
+        return annotationImage
     }
 }
