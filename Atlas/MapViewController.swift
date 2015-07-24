@@ -6,15 +6,16 @@
 //  Copyright (c) 2015 Jack Cook. All rights reserved.
 //
 
-import GoogleMaps
+import MapboxGL
+import SwiftyJSON
 import UIKit
 
-class MapViewController: UIViewController, GMSMapViewDelegate {
+class MapViewController: UIViewController, MGLMapViewDelegate {
     
     @IBOutlet var statusBarContainer: UIView!
     @IBOutlet var mapViewContainer: UIView!
     
-    var mapView: GMSMapView!
+    var mapView: MGLMapView!
     
     let north = 40.915568
     let east = -73.699215
@@ -23,89 +24,145 @@ class MapViewController: UIViewController, GMSMapViewDelegate {
     
     let maxZoom = 11.0
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
         
-        let camera = GMSCameraPosition.cameraWithLatitude(40.7127, longitude: -74.0059, zoom: 12)
+        let styleURL = NSURL(string: "asset://styles/emerald-v7.json")!
         
-        self.mapView = GMSMapView.mapWithFrame(mapViewContainer.bounds, camera: camera)
+        self.mapView = MGLMapView(frame: mapViewContainer.bounds, styleURL: styleURL)
         self.mapView.delegate = self
-        self.mapView.myLocationEnabled = true
         
         self.mapView.autoresizingMask = .FlexibleWidth | .FlexibleHeight
+        self.mapView.attributionButton.alpha = 0
+        self.mapView.logoView.alpha = 0
         
-        self.mapViewContainer.addSubview(mapView)
+        self.mapView.setCenterCoordinate(CLLocationCoordinate2D(latitude: 40.7127, longitude: -74.0059), zoomLevel: 12, animated: false)
+        mapViewContainer.addSubview(self.mapView)
         
+        var dispatchTime: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, Int64(1 * Double(NSEC_PER_SEC)))
+        dispatch_after(dispatchTime, dispatch_get_main_queue(), {
+            self.drawPolyline()
+        })
         
-//        let styleURL = NSURL(string: "asset://styles/emerald-v7.json")!
-//        
-//        self.mapView = MGLMapView(frame: mapViewContainer.bounds, styleURL: styleURL)
-//        self.mapView.delegate = self
-//        
-//        self.mapView.autoresizingMask = .FlexibleWidth | .FlexibleHeight
-//        self.mapView.attributionButton.alpha = 0
-//        self.mapView.logoView.alpha = 0
-//        
-//        self.mapView.setCenterCoordinate(CLLocationCoordinate2D(latitude: 40.7127, longitude: -74.0059), zoomLevel: 12, animated: false)
-//        mapViewContainer.addSubview(self.mapView)
-//        
-//        var dispatchTime: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, Int64(1 * Double(NSEC_PER_SEC)))
-//        dispatch_after(dispatchTime, dispatch_get_main_queue(), {
-//            self.drawPolyline()
-//            self.canDrawLocation = true
-//            self.drawThing()
-//        })
-//        
-//        
-//        locationManager = CLLocationManager()
-//        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-//        locationManager.delegate = self
-//        
-//        locationManager.startUpdatingLocation()
+        let tgr = UITapGestureRecognizer(target: self, action: "tapped:")
+        tgr.numberOfTapsRequired = 1
+//        tgr.delegate = self
+        self.mapView.addGestureRecognizer(tgr)
     }
     
-//    func drawPolyline() {
-//        var coordinates = [CLLocationCoordinate2D(latitude: 40.915568, longitude: -74.257159), CLLocationCoordinate2D(latitude: 40.915568, longitude: -73.699215), CLLocationCoordinate2D(latitude: 40.495992, longitude: -73.699215), CLLocationCoordinate2D(latitude: 40.495992, longitude: -74.257159), CLLocationCoordinate2D(latitude: 40.915568, longitude: -74.257159)]
-//        var polyline = MGLPolyline(coordinates: &coordinates, count: UInt(coordinates.count))
-//        
-//        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-//            self.mapView.addAnnotation(polyline)
-//        })
-//    }
+    func tapped(tgr: UITapGestureRecognizer) {
+        let point = tgr.locationInView(self.mapView)
+        let coordinate = self.mapView.convertPoint(point, toCoordinateFromView: self.mapView)
+        
+        let key = "AIzaSyArAbdik6IOVHoFufQo1q_ouSbeqYP9-m0"
+        
+        let url = NSURL(string: "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=\(key)&location=\(coordinate.latitude),\(coordinate.longitude)&radius=100")!
+        let request = NSMutableURLRequest(URL: url)
+        request.HTTPMethod = "GET"
+        
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response, data, error) -> Void in
+            let json = JSON(data: data)
+            if let results = json["results"].array {
+                for result in results {
+                    if let types = result["types"].array {
+                        var stringTypes = [String]()
+                        for type in types {
+                            if let type = type.string {
+                                stringTypes.append(type)
+                            }
+                        }
+                        
+                        if contains(stringTypes, "neighborhood") {
+                            continue
+                        } else {
+                            if let name = result["name"].string {
+                                println("(\(coordinate.latitude), \(coordinate.longitude)) -> \(name)")
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     
-//    func checkCoordinate() {
-//        let center = self.mapView.centerCoordinate
-//        let lat = center.latitude
-//        let lon = center.longitude
-//        
-//        let outsideNorth = lat > north
-//        let outsideEast = lon > east
-//        let outsideWest = lon < west
-//        let outsideSouth = lat < south
-//        
-//        let outsideZoom = self.mapView.zoomLevel < maxZoom
-//        
-//        let outside = outsideNorth || outsideEast || outsideWest || outsideSouth || outsideZoom
-//        
-//        var newCoordinate = self.mapView.centerCoordinate
-//        var newZoom = outsideZoom ? maxZoom : self.mapView.zoomLevel
-//        
-//        if outside {
-//            if outsideNorth {
-//                newCoordinate.latitude = north
-//            } else if outsideSouth {
-//                newCoordinate.latitude = south
-//            }
-//            
-//            if outsideEast {
-//                newCoordinate.longitude = east
-//            } else if outsideWest {
-//                newCoordinate.longitude = west
-//            }
-//            
-//            println("setting new coordinates \(newCoordinate.latitude), \(newCoordinate.longitude) with zoom level \(newZoom)")
-//            
-//            self.mapView.setCenterCoordinate(newCoordinate, zoomLevel: newZoom, animated: true)
-//        }
-//    }
+    func drawPolyline() {
+        var coordinates = [CLLocationCoordinate2D(latitude: 40.915568, longitude: -74.257159), CLLocationCoordinate2D(latitude: 40.915568, longitude: -73.699215), CLLocationCoordinate2D(latitude: 40.495992, longitude: -73.699215), CLLocationCoordinate2D(latitude: 40.495992, longitude: -74.257159), CLLocationCoordinate2D(latitude: 40.915568, longitude: -74.257159)]
+        var polyline = MGLPolyline(coordinates: &coordinates, count: UInt(coordinates.count))
+        
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            self.mapView.addAnnotation(polyline)
+        })
+    }
+    
+    func checkCoordinate() {
+        let center = self.mapView.centerCoordinate
+        let lat = center.latitude
+        let lon = center.longitude
+        
+        let outsideNorth = lat > north
+        let outsideEast = lon > east
+        let outsideWest = lon < west
+        let outsideSouth = lat < south
+        
+        let outsideZoom = self.mapView.zoomLevel < maxZoom
+        
+        let outside = outsideNorth || outsideEast || outsideWest || outsideSouth || outsideZoom
+        
+        var newCoordinate = self.mapView.centerCoordinate
+        var newZoom = outsideZoom ? maxZoom : self.mapView.zoomLevel
+        
+        if outside {
+            if outsideNorth {
+                newCoordinate.latitude = north
+            } else if outsideSouth {
+                newCoordinate.latitude = south
+            }
+            
+            if outsideEast {
+                newCoordinate.longitude = east
+            } else if outsideWest {
+                newCoordinate.longitude = west
+            }
+            
+            println("setting new coordinates \(newCoordinate.latitude), \(newCoordinate.longitude) with zoom level \(newZoom)")
+            
+            self.mapView.setCenterCoordinate(newCoordinate, zoomLevel: newZoom, animated: true)
+        }
+    }
+    
+    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+        let center = self.mapView.centerCoordinate
+        
+        let key = "AIzaSyArAbdik6IOVHoFufQo1q_ouSbeqYP9-m0"
+        
+        let url = NSURL(string: "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=\(key)&location=\(center.latitude),\(center.longitude)&radius=100")!
+        let request = NSMutableURLRequest(URL: url)
+        request.HTTPMethod = "GET"
+        
+        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response, data, error) -> Void in
+            let json = JSON(data: data)
+            if let results = json["results"].array {
+                for result in results {
+                    if let types = result["types"].array {
+                        var stringTypes = [String]()
+                        for type in types {
+                            if let type = type.string {
+                                stringTypes.append(type)
+                            }
+                        }
+                        
+                        if contains(stringTypes, "neighborhood") {
+                            continue
+                        } else {
+                            if let name = result["name"].string {
+                                println("(\(center.latitude), \(center.longitude)) -> \(name)")
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
