@@ -39,14 +39,11 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
         self.mapView.setCenterCoordinate(CLLocationCoordinate2D(latitude: 40.7127, longitude: -74.0059), zoomLevel: 12, animated: false)
         mapViewContainer.addSubview(self.mapView)
         
-        var dispatchTime: dispatch_time_t = dispatch_time(DISPATCH_TIME_NOW, Int64(1 * Double(NSEC_PER_SEC)))
-        dispatch_after(dispatchTime, dispatch_get_main_queue(), {
-            self.drawPolyline()
-        })
+        let timer = NSTimer.scheduledTimerWithTimeInterval(0.5, target: self, selector: "checkCoordinate", userInfo: nil, repeats: true)
+        NSRunLoop.mainRunLoop().addTimer(timer, forMode: NSRunLoopCommonModes)
         
         let tgr = UITapGestureRecognizer(target: self, action: "tapped:")
         tgr.numberOfTapsRequired = 1
-//        tgr.delegate = self
         self.mapView.addGestureRecognizer(tgr)
     }
     
@@ -86,15 +83,6 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
         }
     }
     
-    func drawPolyline() {
-        var coordinates = [CLLocationCoordinate2D(latitude: 40.915568, longitude: -74.257159), CLLocationCoordinate2D(latitude: 40.915568, longitude: -73.699215), CLLocationCoordinate2D(latitude: 40.495992, longitude: -73.699215), CLLocationCoordinate2D(latitude: 40.495992, longitude: -74.257159), CLLocationCoordinate2D(latitude: 40.915568, longitude: -74.257159)]
-        var polyline = MGLPolyline(coordinates: &coordinates, count: UInt(coordinates.count))
-        
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.mapView.addAnnotation(polyline)
-        })
-    }
-    
     func checkCoordinate() {
         let center = self.mapView.centerCoordinate
         let lat = center.latitude
@@ -128,41 +116,6 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
             println("setting new coordinates \(newCoordinate.latitude), \(newCoordinate.longitude) with zoom level \(newZoom)")
             
             self.mapView.setCenterCoordinate(newCoordinate, zoomLevel: newZoom, animated: true)
-        }
-    }
-    
-    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
-        let center = self.mapView.centerCoordinate
-        
-        let key = "AIzaSyArAbdik6IOVHoFufQo1q_ouSbeqYP9-m0"
-        
-        let url = NSURL(string: "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=\(key)&location=\(center.latitude),\(center.longitude)&radius=100")!
-        let request = NSMutableURLRequest(URL: url)
-        request.HTTPMethod = "GET"
-        
-        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response, data, error) -> Void in
-            let json = JSON(data: data)
-            if let results = json["results"].array {
-                for result in results {
-                    if let types = result["types"].array {
-                        var stringTypes = [String]()
-                        for type in types {
-                            if let type = type.string {
-                                stringTypes.append(type)
-                            }
-                        }
-                        
-                        if contains(stringTypes, "neighborhood") {
-                            continue
-                        } else {
-                            if let name = result["name"].string {
-                                println("(\(center.latitude), \(center.longitude)) -> \(name)")
-                                break
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }
