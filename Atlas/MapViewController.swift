@@ -22,7 +22,7 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
     let west = -74.257159
     let south = 40.495992
     
-    let maxZoom = 11.0
+    let maxZoom = 10.0
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
@@ -32,7 +32,7 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
         self.mapView = MGLMapView(frame: mapViewContainer.bounds, styleURL: styleURL)
         self.mapView.delegate = self
         
-        self.mapView.autoresizingMask = .FlexibleWidth | .FlexibleHeight
+        self.mapView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
         self.mapView.attributionButton.alpha = 0
         self.mapView.logoView.alpha = 0
         
@@ -58,7 +58,7 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
         request.HTTPMethod = "GET"
         
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response, data, error) -> Void in
-            let json = JSON(data: data)
+            let json = JSON(data: data!)
             if let results = json["results"].array {
                 for result in results {
                     if let types = result["types"].array {
@@ -69,11 +69,11 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
                             }
                         }
                         
-                        if contains(stringTypes, "neighborhood") {
+                        if stringTypes.contains("neighborhood") {
                             continue
                         } else {
                             if let name = result["name"].string {
-                                println("(\(coordinate.latitude), \(coordinate.longitude)) -> \(name)")
+                                print("(\(coordinate.latitude), \(coordinate.longitude)) -> \(name)")
                                 break
                             }
                         }
@@ -98,7 +98,7 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
         let outside = outsideNorth || outsideEast || outsideWest || outsideSouth || outsideZoom
         
         var newCoordinate = self.mapView.centerCoordinate
-        var newZoom = outsideZoom ? maxZoom : self.mapView.zoomLevel
+        let newZoom = outsideZoom ? maxZoom : self.mapView.zoomLevel
         
         if outside {
             if outsideNorth {
@@ -113,7 +113,7 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
                 newCoordinate.longitude = west
             }
             
-            println("setting new coordinates \(newCoordinate.latitude), \(newCoordinate.longitude) with zoom level \(newZoom)")
+            print("setting new coordinates \(newCoordinate.latitude), \(newCoordinate.longitude) with zoom level \(newZoom)")
             
             self.mapView.setCenterCoordinate(newCoordinate, zoomLevel: newZoom, animated: true)
         }
