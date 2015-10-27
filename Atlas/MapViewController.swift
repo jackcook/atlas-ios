@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Jack Cook. All rights reserved.
 //
 
-import MapboxGL
+import Mapbox
 import SwiftyJSON
 import UIKit
 
@@ -22,12 +22,12 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
     let west = -74.257159
     let south = 40.495992
     
-    let maxZoom = 10.0
+    let maxZoom = 10.5
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        let styleURL = NSURL(string: "asset://styles/emerald-v7.json")!
+        let styleURL = NSURL(string: "asset://styles/emerald-v8.json")!
         
         self.mapView = MGLMapView(frame: mapViewContainer.bounds, styleURL: styleURL)
         self.mapView.delegate = self
@@ -36,7 +36,7 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
         self.mapView.attributionButton.alpha = 0
         self.mapView.logoView.alpha = 0
         
-        self.mapView.setCenterCoordinate(CLLocationCoordinate2D(latitude: 40.7127, longitude: -74.0059), zoomLevel: 12, animated: false)
+        self.mapView.setCenterCoordinate(CLLocationCoordinate2D(latitude: 40.7127, longitude: -74.0059), zoomLevel: 11, animated: false)
         mapViewContainer.addSubview(self.mapView)
         
         let timer = NSTimer.scheduledTimerWithTimeInterval(0.5, target: self, selector: "checkCoordinate", userInfo: nil, repeats: true)
