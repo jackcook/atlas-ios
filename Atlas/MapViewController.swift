@@ -54,6 +54,15 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.empireStateBuilding.coordinate = CLLocationCoordinate2D(latitude: 40.7484, longitude: -73.9857)
         
         self.mapView.addAnnotation(self.empireStateBuilding)
+        
+        let tgr = UITapGestureRecognizer()
+        tgr.numberOfTapsRequired = 1
+        tgr.addTarget(self, action: "go")
+        self.mapView.addGestureRecognizer(tgr)
+    }
+    
+    func go() {
+        self.mapView.camera.altitude = 200
     }
     
     func mapView(mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
@@ -69,9 +78,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.checkCoordinate()
     }
     
+    let multiplier = UIScreen.mainScreen().bounds.height < 700 ? (UIScreen.mainScreen().bounds.height < 600 ? (UIScreen.mainScreen().bounds.height < 500 ? 1.4 : 1.2) : 1) : 0.83
+    
     func updateAnnotations() {
         let constant = 0.0004825935724
-        let altitude = floor(self.mapView.region.span.latitudeDelta / constant * 100)
+        let altitude = floor(self.mapView.region.span.latitudeDelta / constant * 100) * multiplier
         
         if altitude > 35000 {
             self.mapView.removeAnnotation(self.empireStateBuilding)
