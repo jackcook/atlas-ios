@@ -6,85 +6,82 @@
 //  Copyright (c) 2015 Jack Cook. All rights reserved.
 //
 
-import Mapbox
+import MapKit
 import SwiftyJSON
 import UIKit
 
-class MapViewController: UIViewController, MGLMapViewDelegate {
+class MapViewController: UIViewController, MKMapViewDelegate {
     
     @IBOutlet var statusBarContainer: UIView!
     @IBOutlet var mapViewContainer: UIView!
     
-    var mapView: MGLMapView!
+    var locationManager: CLLocationManager!
+    var mapView: MKMapView!
+    
+    var startingHeight: CGFloat!
+    var positioningTimer: NSTimer!
     
     let north = 40.915568
     let east = -73.699215
     let west = -74.257159
     let south = 40.495992
     
-    let maxZoom = 10.5
+    let maxAltitude: CLLocationDistance = 50000
+    var empireStateBuilding: MKPointAnnotation!
     
-    override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(animated)
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        let styleURL = NSURL(string: "asset://styles/emerald-v8.json")!
+        self.locationManager = CLLocationManager()
+        self.locationManager.requestAlwaysAuthorization()
         
-        self.mapView = MGLMapView(frame: mapViewContainer.bounds, styleURL: styleURL)
+        self.mapView = MKMapView(frame: mapViewContainer.bounds)
         self.mapView.delegate = self
         
         self.mapView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
-        self.mapView.attributionButton.alpha = 0
-        self.mapView.logoView.alpha = 0
         
-        self.mapView.setCenterCoordinate(CLLocationCoordinate2D(latitude: 40.7127, longitude: -74.0059), zoomLevel: 11, animated: false)
+        self.mapView.showsBuildings = false
+        self.mapView.showsPointsOfInterest = true
+        self.mapView.showsUserLocation = true
+        
+        let center = CLLocationCoordinate2D(latitude: 40.7470, longitude: -73.9860)
+        let camera = MKMapCamera(lookingAtCenterCoordinate: center, fromEyeCoordinate: center, eyeAltitude: 25000)
+        self.mapView.setCamera(camera, animated: false)
+        
         mapViewContainer.addSubview(self.mapView)
         
-        let timer = NSTimer.scheduledTimerWithTimeInterval(0.5, target: self, selector: "checkCoordinate", userInfo: nil, repeats: true)
-        NSRunLoop.mainRunLoop().addTimer(timer, forMode: NSRunLoopCommonModes)
+        self.empireStateBuilding = MKPointAnnotation()
+        self.empireStateBuilding.coordinate = CLLocationCoordinate2D(latitude: 40.7484, longitude: -73.9857)
         
-        let tgr = UITapGestureRecognizer(target: self, action: "tapped:")
-        tgr.numberOfTapsRequired = 1
-        self.mapView.addGestureRecognizer(tgr)
+        self.mapView.addAnnotation(self.empireStateBuilding)
     }
     
-    func tapped(tgr: UITapGestureRecognizer) {
-        let point = tgr.locationInView(self.mapView)
-        let coordinate = self.mapView.convertPoint(point, toCoordinateFromView: self.mapView)
+    func mapView(mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
+        self.startingHeight = CGFloat(self.mapView.camera.altitude)
+        self.positioningTimer = NSTimer(timeInterval: 0.1, target: self, selector: "updateAnnotations", userInfo: nil, repeats: true)
+        NSRunLoop.mainRunLoop().addTimer(self.positioningTimer, forMode: NSRunLoopCommonModes)
+    }
+    
+    func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        self.positioningTimer.invalidate()
+        self.positioningTimer = nil
         
-        let key = "AIzaSyArAbdik6IOVHoFufQo1q_ouSbeqYP9-m0"
+        self.checkCoordinate()
+    }
+    
+    func updateAnnotations() {
+        let constant = 0.0004825935724
+        let altitude = floor(self.mapView.region.span.latitudeDelta / constant * 100)
         
-        let url = NSURL(string: "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=\(key)&location=\(coordinate.latitude),\(coordinate.longitude)&radius=100")!
-        let request = NSMutableURLRequest(URL: url)
-        request.HTTPMethod = "GET"
-        
-        NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue()) { (response, data, error) -> Void in
-            let json = JSON(data: data!)
-            if let results = json["results"].array {
-                for result in results {
-                    if let types = result["types"].array {
-                        var stringTypes = [String]()
-                        for type in types {
-                            if let type = type.string {
-                                stringTypes.append(type)
-                            }
-                        }
-                        
-                        if stringTypes.contains("neighborhood") {
-                            continue
-                        } else {
-                            if let name = result["name"].string {
-                                print("(\(coordinate.latitude), \(coordinate.longitude)) -> \(name)")
-                                break
-                            }
-                        }
-                    }
-                }
-            }
+        if altitude > 35000 {
+            self.mapView.removeAnnotation(self.empireStateBuilding)
+        } else {
+            self.mapView.addAnnotation(self.empireStateBuilding)
         }
     }
     
     func checkCoordinate() {
-        let center = self.mapView.centerCoordinate
+        let center = self.mapView.camera.centerCoordinate
         let lat = center.latitude
         let lon = center.longitude
         
@@ -93,12 +90,12 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
         let outsideWest = lon < west
         let outsideSouth = lat < south
         
-        let outsideZoom = self.mapView.zoomLevel < maxZoom
+        let outsideAltitude = self.mapView.camera.altitude > maxAltitude
         
-        let outside = outsideNorth || outsideEast || outsideWest || outsideSouth || outsideZoom
+        let outside = outsideNorth || outsideEast || outsideWest || outsideSouth || outsideAltitude
         
-        var newCoordinate = self.mapView.centerCoordinate
-        let newZoom = outsideZoom ? maxZoom : self.mapView.zoomLevel
+        var newCoordinate = self.mapView.camera.centerCoordinate
+        let newAltitude = outsideAltitude ? maxAltitude : self.mapView.camera.altitude
         
         if outside {
             if outsideNorth {
@@ -113,9 +110,11 @@ class MapViewController: UIViewController, MGLMapViewDelegate {
                 newCoordinate.longitude = west
             }
             
-            print("setting new coordinates \(newCoordinate.latitude), \(newCoordinate.longitude) with zoom level \(newZoom)")
+            print("setting new coordinates \(newCoordinate.latitude), \(newCoordinate.longitude) with altitude \(newAltitude)")
             
-            self.mapView.setCenterCoordinate(newCoordinate, zoomLevel: newZoom, animated: true)
+//            let camera = MKMapCamera(lookingAtCenterCoordinate: newCoordinate, fromDistance: newAltitude, pitch: 0, heading: 0)
+            let camera = MKMapCamera(lookingAtCenterCoordinate: newCoordinate, fromEyeCoordinate: newCoordinate, eyeAltitude: newAltitude)
+            self.mapView.setCamera(camera, animated: true)
         }
     }
 }
