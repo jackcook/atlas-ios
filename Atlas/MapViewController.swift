@@ -27,10 +27,38 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     let south = 40.495992
     
     let maxAltitude: CLLocationDistance = 50000
-    var empireStateBuilding: MKPointAnnotation!
+    
+    var places = Array<Place>()
+    var placeAnnotations = Array<PlaceAnnotation>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let sessionConfig = NSURLSessionConfiguration.defaultSessionConfiguration()
+        let session = NSURLSession(configuration: sessionConfig)
+        
+        let url = NSURL(string: "http://10.0.1.6:5000/places")!
+        let request = NSMutableURLRequest(URL: url)
+        request.HTTPMethod = "GET"
+        
+        let task = session.dataTaskWithRequest(request) { (data, response, error) -> Void in
+            if let _ = error {
+                print(error)
+                print("error retrieving places")
+            } else {
+                if let places = JSON(data: data!).array {
+                    for obj in places {
+                        let place = Place(data: obj)
+                        self.places.append(place)
+                        
+                        let annotation = place.annotation()
+                        self.placeAnnotations.append(annotation)
+                    }
+                }
+            }
+        }
+        
+        task.resume()
         
         self.locationManager = CLLocationManager()
         self.locationManager.requestAlwaysAuthorization()
@@ -49,20 +77,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.mapView.setCamera(camera, animated: false)
         
         mapViewContainer.addSubview(self.mapView)
-        
-        self.empireStateBuilding = MKPointAnnotation()
-        self.empireStateBuilding.coordinate = CLLocationCoordinate2D(latitude: 40.7484, longitude: -73.9857)
-        
-        self.mapView.addAnnotation(self.empireStateBuilding)
-        
-        let tgr = UITapGestureRecognizer()
-        tgr.numberOfTapsRequired = 1
-        tgr.addTarget(self, action: "go")
-        self.mapView.addGestureRecognizer(tgr)
-    }
-    
-    func go() {
-        self.mapView.camera.altitude = 200
     }
     
     func mapView(mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
@@ -78,17 +92,31 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.checkCoordinate()
     }
     
+    var altitude = 0.0
     let multiplier = UIScreen.mainScreen().bounds.height < 700 ? (UIScreen.mainScreen().bounds.height < 600 ? (UIScreen.mainScreen().bounds.height < 500 ? 1.4 : 1.2) : 1) : 0.83
     
     func updateAnnotations() {
         let constant = 0.0004825935724
         let altitude = floor(self.mapView.region.span.latitudeDelta / constant * 100) * multiplier
         
-        if altitude > 35000 {
-            self.mapView.removeAnnotation(self.empireStateBuilding)
-        } else {
-            self.mapView.addAnnotation(self.empireStateBuilding)
+        if self.altitude == 0 {
+            self.altitude = altitude
+            return
         }
+        
+        if self.altitude < 20000 && altitude < 20000 {
+            // we don't need to modify any annotations
+        } else if self.altitude >= 20000 && altitude < 20000 {
+            self.mapView.addAnnotations(self.placeAnnotations)
+            print("adding annotations")
+        } else if self.altitude < 20000 && altitude >= 20000 {
+            self.mapView.removeAnnotations(self.placeAnnotations)
+            print("removing annotations")
+        } else if self.altitude >= 20000 && altitude >= 20000 {
+            // still don't need to change any annotations
+        }
+        
+        self.altitude = altitude
     }
     
     func checkCoordinate() {
@@ -123,9 +151,16 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             
             print("setting new coordinates \(newCoordinate.latitude), \(newCoordinate.longitude) with altitude \(newAltitude)")
             
-//            let camera = MKMapCamera(lookingAtCenterCoordinate: newCoordinate, fromDistance: newAltitude, pitch: 0, heading: 0)
             let camera = MKMapCamera(lookingAtCenterCoordinate: newCoordinate, fromEyeCoordinate: newCoordinate, eyeAltitude: newAltitude)
             self.mapView.setCamera(camera, animated: true)
         }
+    }
+    
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation is PlaceAnnotation {
+            return (annotation as! PlaceAnnotation).annotationView()
+        }
+        
+        return nil
     }
 }

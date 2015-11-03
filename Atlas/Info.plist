@@ -26,6 +26,11 @@
 	<string>sk.eyJ1IjoiamFja2Nvb2siLCJhIjoiZTI0NDkxNGYyZjc4M2M4Y2RkNzc3OTdkNTIwODUwZWUifQ.eMMtk5l2Ie36tHZ0zJ1Bvw</string>
 	<key>MGLMapboxMetricsEnabledSettingShownInApp</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>test2</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

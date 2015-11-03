@@ -14,6 +14,8 @@
 		EB4706661B60301600CD1611 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB4706651B60301600CD1611 /* Images.xcassets */; };
 		EB4706691B60301600CD1611 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = EB4706671B60301600CD1611 /* LaunchScreen.xib */; };
 		EB4706751B60301600CD1611 /* AtlasTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB4706741B60301600CD1611 /* AtlasTests.swift */; };
+		EB68D6381BE93E0400FD460F /* Place.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB68D6371BE93E0400FD460F /* Place.swift */; };
+		EB68D63A1BE9417100FD460F /* PlaceAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB68D6391BE9417100FD460F /* PlaceAnnotation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +42,8 @@
 		EB47066E1B60301600CD1611 /* AtlasTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AtlasTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EB4706731B60301600CD1611 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EB4706741B60301600CD1611 /* AtlasTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AtlasTests.swift; sourceTree = "<group>"; };
+		EB68D6371BE93E0400FD460F /* Place.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Place.swift; sourceTree = "<group>"; };
+		EB68D6391BE9417100FD460F /* PlaceAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaceAnnotation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +113,7 @@
 		EB47065B1B60301600CD1611 /* Atlas */ = {
 			isa = PBXGroup;
 			children = (
+				EB68D6361BE93DF800FD460F /* Utilities */,
 				EB1520131B60308A0081376C /* View Controllers */,
 				EB47065E1B60301600CD1611 /* AppDelegate.swift */,
 				EB4706621B60301600CD1611 /* Main.storyboard */,
@@ -142,6 +147,15 @@
 				EB4706731B60301600CD1611 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		EB68D6361BE93DF800FD460F /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				EB68D6371BE93E0400FD460F /* Place.swift */,
+				EB68D6391BE9417100FD460F /* PlaceAnnotation.swift */,
+			);
+			name = Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -301,6 +315,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EB68D63A1BE9417100FD460F /* PlaceAnnotation.swift in Sources */,
+				EB68D6381BE93E0400FD460F /* Place.swift in Sources */,
 				EB47065F1B60301600CD1611 /* AppDelegate.swift in Sources */,
 				EB1520151B6030960081376C /* MapViewController.swift in Sources */,
 			);
