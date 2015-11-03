@@ -6,7 +6,9 @@
 //  Copyright © 2015 Jack Cook. All rights reserved.
 //
 
+import HexColors
 import MapKit
+import THLabel
 
 public class PlaceAnnotation: NSObject, MKAnnotation {
     
@@ -26,25 +28,19 @@ public class PlaceAnnotation: NSObject, MKAnnotation {
         let imageView = UIImageView()
         imageView.image = UIImage(named: "Black")
         
-        let label = UILabel(frame: CGRectMake(-44, 16, 88, 42))
+        let label = THLabel(frame: CGRectMake(-44, 16, 88, 42))
         label.numberOfLines = 0
+        label.lineBreakMode = .ByWordWrapping
         
-        let style = NSMutableParagraphStyle()
-        style.alignment = NSTextAlignment.Center
-        style.lineSpacing = -3
+        label.text = self.name
+        label.textAlignment = .Center
+        label.textColor = UIColor.hx_colorWithHexString("#879DCC")
+        label.font = UIFont.systemFontOfSize(11, weight: UIFontWeightBold)
         
-        let textAttributes = [
-            NSStrokeColorAttributeName: UIColor.whiteColor(),
-            NSForegroundColorAttributeName: UIColor(red: 84.0/255.0, green: 116.0/255.0, blue: 123.0/255.0, alpha: 1.0),
-            NSStrokeWidthAttributeName: -6,
-            NSFontAttributeName: UIFont.systemFontOfSize(11.5, weight: UIFontWeightHeavy),
-            NSKernAttributeName: -0.75,
-            NSParagraphStyleAttributeName: style
-        ]
-        
-        label.attributedText = NSAttributedString(string: "Thomas J. Watson Library", attributes: textAttributes)
-        label.sizeToFit()
-        label.frame = CGRectMake(-label.frame.size.width / 2, 16, label.frame.size.width, label.frame.size.height)
+        label.letterSpacing = -0.75
+        label.strokeColor = UIColor.whiteColor()
+        label.strokeSize = 1
+        label.contentMode = .Top
         
         imageView.frame = CGRectMake(-7, 0, 14, 14)
         

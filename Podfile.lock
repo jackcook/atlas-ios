@@ -1,10 +1,16 @@
 PODS:
+  - HexColors (3.0.0)
   - SwiftyJSON (2.3.1)
+  - THLabel (1.4.6)
 
 DEPENDENCIES:
+  - HexColors (~> 3.0)
   - SwiftyJSON (~> 2.3)
+  - THLabel (~> 1.4)
 
 SPEC CHECKSUMS:
+  HexColors: 8b83e3fe90c0d466dae7b98c9d22da95799f99cb
   SwiftyJSON: 592b53bee5ef3dd9b3bebc6b9cb7ee35426ae8c3
+  THLabel: 27890d10123514ffe74b6e023b57b2ece55304af
 
 COCOAPODS: 0.39.0
