@@ -15,16 +15,18 @@ public struct Place {
     var name: String
     var latitude: Double
     var longitude: Double
+    var type: PlaceType
     
     init(data: JSON) {
         self.id = data["id"].int!
         self.name = data["name"].string!
         self.latitude = data["latitude"].double!
         self.longitude = data["longitude"].double!
+        self.type = PlaceType(rawValue: data["types"].array![0].string!)!
     }
     
     func annotation() -> PlaceAnnotation {
-        return PlaceAnnotation(name: self.name, coordinate: self.coordinate())
+        return PlaceAnnotation(place: self)
     }
     
     func coordinate() -> CLLocationCoordinate2D {

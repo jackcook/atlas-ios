@@ -13,11 +13,11 @@ import THLabel
 public class PlaceAnnotation: NSObject, MKAnnotation {
     
     public var coordinate: CLLocationCoordinate2D
-    public var name: String
+    public var place: Place
     
-    init(name: String, coordinate: CLLocationCoordinate2D) {
-        self.name = name
-        self.coordinate = coordinate
+    init(place: Place) {
+        self.coordinate = CLLocationCoordinate2DMake(place.latitude, place.longitude)
+        self.place = place
     }
     
     public func annotationView() -> MKAnnotationView {
@@ -32,7 +32,7 @@ public class PlaceAnnotation: NSObject, MKAnnotation {
         label.numberOfLines = 0
         label.lineBreakMode = .ByWordWrapping
         
-        label.text = self.name
+        label.text = self.place.name
         label.textAlignment = .Center
         label.textColor = UIColor.hx_colorWithHexString("#879DCC")
         label.font = UIFont.systemFontOfSize(11, weight: UIFontWeightBold)

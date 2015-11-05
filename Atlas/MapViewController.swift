@@ -29,7 +29,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     let maxAltitude: CLLocationDistance = 50000
     
     var places = Array<Place>()
-    var placeAnnotations = Array<PlaceAnnotation>()
+    var annotations = Array<PlaceAnnotation>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,7 +52,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                         self.places.append(place)
                         
                         let annotation = place.annotation()
-                        self.placeAnnotations.append(annotation)
+                        self.annotations.append(annotation)
                     }
                 }
             }
@@ -98,22 +98,19 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     func updateAnnotations() {
         let constant = 0.0004825935724
         let altitude = floor(self.mapView.region.span.latitudeDelta / constant * 100) * multiplier
+        print(altitude)
         
         if self.altitude == 0 {
             self.altitude = altitude
             return
         }
         
-        if self.altitude < 20000 && altitude < 20000 {
-            // we don't need to modify any annotations
-        } else if self.altitude >= 20000 && altitude < 20000 {
-            self.mapView.addAnnotations(self.placeAnnotations)
-            print("adding annotations")
-        } else if self.altitude < 20000 && altitude >= 20000 {
-            self.mapView.removeAnnotations(self.placeAnnotations)
-            print("removing annotations")
-        } else if self.altitude >= 20000 && altitude >= 20000 {
-            // still don't need to change any annotations
+        for annotation in self.annotations {
+            if Int(altitude) - annotation.place.type.visibility() <= 0 {
+                self.mapView.addAnnotation(annotation)
+            } else {
+                self.mapView.removeAnnotation(annotation)
+            }
         }
         
         self.altitude = altitude
