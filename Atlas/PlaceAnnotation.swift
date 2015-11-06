@@ -25,24 +25,24 @@ public class PlaceAnnotation: NSObject, MKAnnotation {
         annotationView.enabled = true
         annotationView.canShowCallout = false
         
-        let imageView = UIImageView()
-        imageView.image = UIImage(named: "Black")
+        annotationView.centerOffset = CGPointMake(-44, -30)
         
-        let label = THLabel(frame: CGRectMake(-44, 16, 88, 42))
+        let imageView = UIImageView(frame: CGRectMake(36, 0, 16, 16))
+        imageView.image = self.place.type.image()
+        
+        let label = THLabel(frame: CGRectMake(0, 18, 88, 42))
         label.numberOfLines = 0
         label.lineBreakMode = .ByWordWrapping
         
         label.text = self.place.name
         label.textAlignment = .Center
-        label.textColor = UIColor.hx_colorWithHexString("#879DCC")
-        label.font = UIFont.systemFontOfSize(11, weight: UIFontWeightBold)
+        label.textColor = self.place.type.color()
+        label.font = UIFont.systemFontOfSize(10.5, weight: UIFontWeightSemibold)
         
-        label.letterSpacing = -0.75
+        label.letterSpacing = -0.25
         label.strokeColor = UIColor.whiteColor()
         label.strokeSize = 1
         label.contentMode = .Top
-        
-        imageView.frame = CGRectMake(-7, 0, 14, 14)
         
         annotationView.addSubview(imageView)
         annotationView.addSubview(label)

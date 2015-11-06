@@ -20,9 +20,9 @@ public struct Place {
     init(data: JSON) {
         self.id = data["id"].int!
         self.name = data["name"].string!
-        self.latitude = data["latitude"].double!
-        self.longitude = data["longitude"].double!
-        self.type = PlaceType(rawValue: data["types"].array![0].string!)!
+        self.latitude = data["lat"].double!
+        self.longitude = data["lon"].double!
+        self.type = PlaceType(rawValue: data["type"].string!)!
     }
     
     func annotation() -> PlaceAnnotation {

@@ -69,7 +69,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         self.mapView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
         
         self.mapView.showsBuildings = false
-        self.mapView.showsPointsOfInterest = true
+        self.mapView.showsPointsOfInterest = false
         self.mapView.showsUserLocation = true
         
         let center = CLLocationCoordinate2D(latitude: 40.7470, longitude: -73.9860)
@@ -81,7 +81,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     func mapView(mapView: MKMapView, regionWillChangeAnimated animated: Bool) {
         self.startingHeight = CGFloat(self.mapView.camera.altitude)
-        self.positioningTimer = NSTimer(timeInterval: 0.1, target: self, selector: "updateAnnotations", userInfo: nil, repeats: true)
+        self.positioningTimer = NSTimer(timeInterval: 0.25, target: self, selector: "updateAnnotations", userInfo: nil, repeats: true)
         NSRunLoop.mainRunLoop().addTimer(self.positioningTimer, forMode: NSRunLoopCommonModes)
     }
     
@@ -105,13 +105,33 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             return
         }
         
+        var toAdd = Array<PlaceAnnotation>()
+        
         for annotation in self.annotations {
-            if Int(altitude) - annotation.place.type.visibility() <= 0 {
-                self.mapView.addAnnotation(annotation)
+            let visible = Int(altitude) - annotation.place.type.visibility() <= 0
+            if let annotationView = self.mapView.viewForAnnotation(annotation) {
+                if !visible {
+                    UIView.animateWithDuration(0.25, animations: { () -> Void in
+                        annotationView.alpha = 0
+                    }, completion: { (animated) -> Void in
+                        self.mapView.removeAnnotation(annotation)
+                    })
+                }
             } else {
-                self.mapView.removeAnnotation(annotation)
+                if visible {
+                    let northwest = self.mapView.convertPoint(CGPointZero, toCoordinateFromView: self.mapView)
+                    let southeast = self.mapView.convertPoint(CGPointMake(self.mapView.frame.width, self.mapView.frame.height), toCoordinateFromView: self.mapView)
+                    let inside = (northwest.latitude < annotation.place.latitude && annotation.place.latitude < southeast.latitude || northwest.latitude > annotation.place.latitude && annotation.place.latitude > southeast.latitude)
+                        && (northwest.longitude < annotation.place.longitude && annotation.place.longitude < southeast.longitude || northwest.longitude > annotation.place.longitude && annotation.place.longitude > southeast.longitude)
+                    
+                    if inside {
+                        toAdd.append(annotation)
+                    }
+                }
             }
         }
+        
+        self.mapView.addAnnotations(toAdd)
         
         self.altitude = altitude
     }
@@ -150,6 +170,30 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             
             let camera = MKMapCamera(lookingAtCenterCoordinate: newCoordinate, fromEyeCoordinate: newCoordinate, eyeAltitude: newAltitude)
             self.mapView.setCamera(camera, animated: true)
+        }
+    }
+    
+    func mapView(mapView: MKMapView, didAddAnnotationViews views: [MKAnnotationView]) {
+        for annotationView in views {
+            annotationView.alpha = 0
+            UIView.animateWithDuration(0.25, animations: { () -> Void in
+                annotationView.alpha = 1
+            })
+            
+            let tgr = UITapGestureRecognizer(target: self, action: "test")
+            annotationView.addGestureRecognizer(tgr)
+        }
+    }
+    
+    func test() {
+        print("test")
+    }
+    
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        if let annotation = view.annotation {
+            if annotation is PlaceAnnotation {
+                print((annotation as! PlaceAnnotation).place.name)
+            }
         }
     }
     
