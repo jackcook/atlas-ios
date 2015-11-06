@@ -24,8 +24,9 @@ public class PlaceAnnotation: NSObject, MKAnnotation {
         let annotationView = MKAnnotationView(annotation: self, reuseIdentifier: "PlaceAnnotation")
         annotationView.enabled = true
         annotationView.canShowCallout = false
+        annotationView.frame = CGRectMake(0, 0, 88, 60)
         
-        annotationView.centerOffset = CGPointMake(-44, -8)
+        annotationView.centerOffset = CGPointMake(0, 22)
         
         let imageView = UIImageView(frame: CGRectMake(36, 0, 16, 16))
         imageView.image = self.place.type.image()
@@ -48,5 +49,12 @@ public class PlaceAnnotation: NSObject, MKAnnotation {
         annotationView.addSubview(label)
         
         return annotationView
+    }
+    
+    public func isVisible(mapView: MKMapView) -> Bool {
+        let northwest = mapView.convertPoint(CGPointZero, toCoordinateFromView: mapView)
+        let southeast = mapView.convertPoint(CGPointMake(mapView.frame.width, mapView.frame.height), toCoordinateFromView: mapView)
+        return (northwest.latitude < self.place.latitude && self.place.latitude < southeast.latitude || northwest.latitude > self.place.latitude && self.place.latitude > southeast.latitude)
+            && (northwest.longitude < self.place.longitude && self.place.longitude < southeast.longitude || northwest.longitude > self.place.longitude && self.place.longitude > southeast.longitude)
     }
 }

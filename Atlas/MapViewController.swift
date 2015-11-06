@@ -114,23 +114,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 if !visible {
                     toRemove.append(annotation)
                 } else {
-                    let northwest = self.mapView.convertPoint(CGPointZero, toCoordinateFromView: self.mapView)
-                    let southeast = self.mapView.convertPoint(CGPointMake(self.mapView.frame.width, self.mapView.frame.height), toCoordinateFromView: self.mapView)
-                    let inside = (northwest.latitude < annotation.place.latitude && annotation.place.latitude < southeast.latitude || northwest.latitude > annotation.place.latitude && annotation.place.latitude > southeast.latitude)
-                        && (northwest.longitude < annotation.place.longitude && annotation.place.longitude < southeast.longitude || northwest.longitude > annotation.place.longitude && annotation.place.longitude > southeast.longitude)
-                    
-                    if !inside {
+                    if !annotation.isVisible(self.mapView) {
                         toRemove.append(annotation)
                     }
                 }
             } else {
                 if visible {
-                    let northwest = self.mapView.convertPoint(CGPointZero, toCoordinateFromView: self.mapView)
-                    let southeast = self.mapView.convertPoint(CGPointMake(self.mapView.frame.width, self.mapView.frame.height), toCoordinateFromView: self.mapView)
-                    let inside = (northwest.latitude < annotation.place.latitude && annotation.place.latitude < southeast.latitude || northwest.latitude > annotation.place.latitude && annotation.place.latitude > southeast.latitude)
-                        && (northwest.longitude < annotation.place.longitude && annotation.place.longitude < southeast.longitude || northwest.longitude > annotation.place.longitude && annotation.place.longitude > southeast.longitude)
-                    
-                    if inside {
+                    if annotation.isVisible(self.mapView) {
                         toAdd.append(annotation)
                     }
                 }
@@ -194,20 +184,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             UIView.animateWithDuration(0.25, animations: { () -> Void in
                 annotationView.alpha = 1
             })
-            
-            let tgr = UITapGestureRecognizer(target: self, action: "test")
-            annotationView.addGestureRecognizer(tgr)
         }
-    }
-    
-    func test() {
-        print("test")
     }
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         if let annotation = view.annotation {
             if annotation is PlaceAnnotation {
                 print((annotation as! PlaceAnnotation).place.name)
+                self.mapView.deselectAnnotation(annotation, animated: true)
             }
         }
     }
