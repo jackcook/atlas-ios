@@ -25,7 +25,7 @@ public class PlaceAnnotation: NSObject, MKAnnotation {
         annotationView.enabled = true
         annotationView.canShowCallout = false
         
-        annotationView.centerOffset = CGPointMake(-44, -30)
+        annotationView.centerOffset = CGPointMake(-44, -8)
         
         let imageView = UIImageView(frame: CGRectMake(36, 0, 16, 16))
         imageView.image = self.place.type.image()

@@ -106,16 +106,22 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
         
         var toAdd = Array<PlaceAnnotation>()
+        var toRemove = Array<PlaceAnnotation>()
         
         for annotation in self.annotations {
             let visible = Int(altitude) - annotation.place.type.visibility() <= 0
-            if let annotationView = self.mapView.viewForAnnotation(annotation) {
+            if let _ = self.mapView.viewForAnnotation(annotation) {
                 if !visible {
-                    UIView.animateWithDuration(0.25, animations: { () -> Void in
-                        annotationView.alpha = 0
-                    }, completion: { (animated) -> Void in
-                        self.mapView.removeAnnotation(annotation)
-                    })
+                    toRemove.append(annotation)
+                } else {
+                    let northwest = self.mapView.convertPoint(CGPointZero, toCoordinateFromView: self.mapView)
+                    let southeast = self.mapView.convertPoint(CGPointMake(self.mapView.frame.width, self.mapView.frame.height), toCoordinateFromView: self.mapView)
+                    let inside = (northwest.latitude < annotation.place.latitude && annotation.place.latitude < southeast.latitude || northwest.latitude > annotation.place.latitude && annotation.place.latitude > southeast.latitude)
+                        && (northwest.longitude < annotation.place.longitude && annotation.place.longitude < southeast.longitude || northwest.longitude > annotation.place.longitude && annotation.place.longitude > southeast.longitude)
+                    
+                    if !inside {
+                        toRemove.append(annotation)
+                    }
                 }
             } else {
                 if visible {
@@ -132,6 +138,15 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
         
         self.mapView.addAnnotations(toAdd)
+        
+        for annotation in toRemove {
+            let annotationView = self.mapView.viewForAnnotation(annotation)!
+            UIView.animateWithDuration(0.25, animations: { () -> Void in
+                annotationView.alpha = 0
+            }, completion: { (animated) -> Void in
+                self.mapView.removeAnnotation(annotation)
+            })
+        }
         
         self.altitude = altitude
     }

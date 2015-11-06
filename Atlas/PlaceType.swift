@@ -31,7 +31,7 @@ public enum PlaceType: String {
     func visibility() -> Int {
         switch self {
         case .Citibike:
-            return 1500
+            return 2000
         case .Museum:
             return 13000
         case .Monument:
